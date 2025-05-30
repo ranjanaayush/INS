@@ -1,0 +1,39 @@
+Performance Goals for 2024–2025
+1. Project Delivery (40%)
+Goal: Ensure consistent and high-quality contribution to project execution
+
+Deliver assigned tasks on time with a strong focus on quality.
+
+Collaborate effectively with project managers and team members to gather feedback and align with expectations.
+
+Write clean, efficient, and production-ready code that follows best practices.
+
+Develop a sound understanding of the project's business objectives and align technical work accordingly.
+
+Maintain proper version control, conduct peer reviews, and follow team coding standards.
+
+2. Learning and Development (40%)
+Goal: Strengthen domain knowledge and enhance technical skillset
+
+Deepen understanding of the insurance domain, especially key business processes and KPIs.
+
+Advance technical proficiency in tools and technologies like Python, SQL, Power BI, Excel, and Machine Learning.
+
+Get hands-on with modern frameworks like FastAPI and cloud platforms such as Azure.
+
+Translate learnings from EXL's internal training into real-world project scenarios.
+
+Aim to complete at least one industry-recognized certification or internal learning milestone.
+
+3. Communication and Presentation (20%)
+Goal: Improve clarity, confidence, and effectiveness in professional communication
+
+Communicate technical ideas clearly and confidently during team discussions and presentations.
+
+Maintain well-documented code, processes, and project outcomes for future reference.
+
+Contribute actively during meetings and knowledge-sharing sessions.
+
+Practice simplifying complex topics for non-technical stakeholders.
+
+Lead or co-present at least one internal session to showcase work or share insights.
