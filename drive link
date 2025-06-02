@@ -9,24 +9,19 @@ library(lubridate)
 
 valuation_date <- as.Date("2016-09-27")
 
-# Filter claims reported before valuation date
-claims_reported_before <- dt_policy_claim[date_report < valuation_date, .N]
+# Claims reported before valuation date
+claims_before_val <- dt_policy_claim[date_report < valuation_date]
 
-cat("Number of claims reported before", valuation_date, ":", claims_reported_before, "\n")
-
-
-
-
-
+# Claims reported within 3 months after valuation date
 claims_within_3m <- dt_policy_claim[
-  date_report >= valuation_date & date_report < (valuation_date %m+% months(3)),
-  .N
+  date_report >= valuation_date & date_report < (valuation_date %m+% months(3))
 ]
 
+# Claims reported within 12 months after valuation date
 claims_within_12m <- dt_policy_claim[
-  date_report >= valuation_date & date_report < (valuation_date %m+% months(12)),
-  .N
+  date_report >= valuation_date & date_report < (valuation_date %m+% months(12))
 ]
 
-cat("Claims within 3 months after valuation:", claims_within_3m, "\n")
-cat("Claims within 12 months after valuation:", claims_within_12m, "\n")
+write.csv(claims_before_val, "claims_before_valuation.csv", row.names = FALSE)
+write.csv(claims_within_3m, "claims_within_3_months.csv", row.names = FALSE)
+write.csv(claims_within_12m, "claims_within_12_months.csv", row.names = FALSE)
