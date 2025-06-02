@@ -25,3 +25,9 @@ claims_within_12m <- dt_policy_claim[
 write.csv(claims_before_val, "claims_before_valuation.csv", row.names = FALSE)
 write.csv(claims_within_3m, "claims_within_3_months.csv", row.names = FALSE)
 write.csv(claims_within_12m, "claims_within_12_months.csv", row.names = FALSE)
+
+library(openxlsx)
+
+write.xlsx(claims_before_val, "claims_before_valuation.xlsx")
+write.xlsx(claims_within_3m, "claims_within_3_months.xlsx")
+write.xlsx(claims_within_12m, "claims_within_12_months.xlsx")
