@@ -17,7 +17,8 @@ cols_to_summarize <- c("delay_occ_rep", "delay_uw_occ", "delay_rep_pay")
 summary_stats_per_dataset <- function(dt, dataset_name) {
   stats_list <- lapply(cols_to_summarize, function(col) {
     data <- dt[[col]]
-    data <- data[!is.na(data)]
+    data <- data[!is.na(data) & data != -1]  # exclude NA and -1
+    
     list(
       Dataset = dataset_name,
       Variable = col,
@@ -29,14 +30,3 @@ summary_stats_per_dataset <- function(dt, dataset_name) {
   })
   return(rbindlist(stats_list))
 }
-
-library(data.table)
-
-freq_stats <- summary_stats_per_dataset(all_freq, "Freq_Train")
-loss_stats <- summary_stats_per_dataset(all_loss, "Loss_Train")
-test_stats <- summary_stats_per_dataset(all_test, "Test")
-
-# Combine all summaries into one table
-all_stats <- rbindlist(list(freq_stats, loss_stats, test_stats))
-
-print(all_stats)
