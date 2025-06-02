@@ -4,55 +4,29 @@ conda install -c conda-forge r-data.table r-magrittr r-lubridate r-ggplot2 r-cow
 
 conda install -c conda-forge r-knitr r-rmdformats r-data.table r-magrittr r-lubridate r-ggplot2 r-cowplot r-repr r-kableextra r-irdisplay
 
-sum(!is.na(dt_All_IBNR$clm_number))
 
-all_freq[, dataset_type := "Freq_Train"]
-all_loss[, dataset_type := "Loss_Train"]
-all_test[, dataset_type := "Test"]
+library(lubridate)
 
-dt_All_IBNR <- rbindlist(list(all_freq, all_loss, all_test), fill = TRUE)
+valuation_date <- as.Date("2016-09-27")
 
-cols_to_summarize <- c("delay_occ_rep", "delay_uw_occ", "delay_rep_pay")
+# Filter claims reported before valuation date
+claims_reported_before <- dt_policy_claim[date_report < valuation_date, .N]
 
-summary_stats_per_dataset <- function(dt, dataset_name) {
-  stats_list <- lapply(cols_to_summarize, function(col) {
-    data <- dt[[col]]
-    data <- data[!is.na(data) & data != -1]  # exclude NA and -1
-    
-    list(
-      Dataset = dataset_name,
-      Variable = col,
-      Max = if(length(data) > 0) max(data) else NA,
-      Min = if(length(data) > 0) min(data) else NA,
-      Median = if(length(data) > 0) median(data) else NA,
-      Mode = if(length(data) > 0) get_mode(data) else NA
-    )
-  })
-  return(rbindlist(stats_list))
-}
+cat("Number of claims reported before", valuation_date, ":", claims_reported_before, "\n")
 
 
 
 
 
+claims_within_3m <- dt_policy_claim[
+  date_report >= valuation_date & date_report < (valuation_date %m+% months(3)),
+  .N
+]
 
+claims_within_12m <- dt_policy_claim[
+  date_report >= valuation_date & date_report < (valuation_date %m+% months(12)),
+  .N
+]
 
-cols_to_summarize <- c("delay_occ_rep", "delay_uw_occ", "delay_rep_pay")
-
-summary_stats_agg <- lapply(cols_to_summarize, function(col) {
-  data <- dt_IBNR_aggr[[col]]
-  data <- data[!is.na(data) & data != -1]  # exclude NA and -1
-  
-  list(
-    Variable = col,
-    Max = if(length(data) > 0) max(data) else NA,
-    Min = if(length(data) > 0) min(data) else NA,
-    Median = if(length(data) > 0) median(data) else NA,
-    Mode = if(length(data) > 0) get_mode(data) else NA
-  )
-})
-
-library(data.table)
-summary_dt_agg <- rbindlist(summary_stats_agg)
-
-print(summary_dt_agg)
+cat("Claims within 3 months after valuation:", claims_within_3m, "\n")
+cat("Claims within 12 months after valuation:", claims_within_12m, "\n")
