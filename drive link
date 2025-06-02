@@ -30,3 +30,29 @@ summary_stats_per_dataset <- function(dt, dataset_name) {
   })
   return(rbindlist(stats_list))
 }
+
+
+
+
+
+
+
+cols_to_summarize <- c("delay_occ_rep", "delay_uw_occ", "delay_rep_pay")
+
+summary_stats_agg <- lapply(cols_to_summarize, function(col) {
+  data <- dt_IBNR_aggr[[col]]
+  data <- data[!is.na(data) & data != -1]  # exclude NA and -1
+  
+  list(
+    Variable = col,
+    Max = if(length(data) > 0) max(data) else NA,
+    Min = if(length(data) > 0) min(data) else NA,
+    Median = if(length(data) > 0) median(data) else NA,
+    Mode = if(length(data) > 0) get_mode(data) else NA
+  )
+})
+
+library(data.table)
+summary_dt_agg <- rbindlist(summary_stats_agg)
+
+print(summary_dt_agg)
