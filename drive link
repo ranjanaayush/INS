@@ -5,3 +5,9 @@ conda install -c conda-forge r-data.table r-magrittr r-lubridate r-ggplot2 r-cow
 conda install -c conda-forge r-knitr r-rmdformats r-data.table r-magrittr r-lubridate r-ggplot2 r-cowplot r-repr r-kableextra r-irdisplay
 
 sum(!is.na(dt_All_IBNR$clm_number))
+
+all_freq[, dataset_type := "Freq_Train"]
+all_loss[, dataset_type := "Loss_Train"]
+all_test[, dataset_type := "Test"]
+
+dt_All_IBNR <- rbindlist(list(all_freq, all_loss, all_test), fill = TRUE)
