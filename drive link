@@ -12,27 +12,31 @@ all_test[, dataset_type := "Test"]
 
 dt_All_IBNR <- rbindlist(list(all_freq, all_loss, all_test), fill = TRUE)
 
-get_mode <- function(v) {
-  uniqv <- unique(v)
-  uniqv[which.max(tabulate(match(v, uniqv)))]
-}
-
 cols_to_summarize <- c("delay_occ_rep", "delay_uw_occ", "delay_rep_pay")
 
-summary_stats <- lapply(cols_to_summarize, function(col) {
-  data <- dt_IBNR_aggr[[col]]
-  data <- data[!is.na(data)]
-  
-  list(
-    Variable = col,
-    Max = max(data),
-    Min = min(data),
-    Median = median(data),
-    Mode = get_mode(data)
-  )
-})
+summary_stats_per_dataset <- function(dt, dataset_name) {
+  stats_list <- lapply(cols_to_summarize, function(col) {
+    data <- dt[[col]]
+    data <- data[!is.na(data)]
+    list(
+      Dataset = dataset_name,
+      Variable = col,
+      Max = if(length(data) > 0) max(data) else NA,
+      Min = if(length(data) > 0) min(data) else NA,
+      Median = if(length(data) > 0) median(data) else NA,
+      Mode = if(length(data) > 0) get_mode(data) else NA
+    )
+  })
+  return(rbindlist(stats_list))
+}
 
 library(data.table)
-summary_dt <- rbindlist(summary_stats)
 
-print(summary_dt)
+freq_stats <- summary_stats_per_dataset(all_freq, "Freq_Train")
+loss_stats <- summary_stats_per_dataset(all_loss, "Loss_Train")
+test_stats <- summary_stats_per_dataset(all_test, "Test")
+
+# Combine all summaries into one table
+all_stats <- rbindlist(list(freq_stats, loss_stats, test_stats))
+
+print(all_stats)
