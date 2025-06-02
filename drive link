@@ -11,3 +11,28 @@ all_loss[, dataset_type := "Loss_Train"]
 all_test[, dataset_type := "Test"]
 
 dt_All_IBNR <- rbindlist(list(all_freq, all_loss, all_test), fill = TRUE)
+
+get_mode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+cols_to_summarize <- c("delay_occ_rep", "delay_uw_occ", "delay_rep_pay")
+
+summary_stats <- lapply(cols_to_summarize, function(col) {
+  data <- dt_IBNR_aggr[[col]]
+  data <- data[!is.na(data)]
+  
+  list(
+    Variable = col,
+    Max = max(data),
+    Min = min(data),
+    Median = median(data),
+    Mode = get_mode(data)
+  )
+})
+
+library(data.table)
+summary_dt <- rbindlist(summary_stats)
+
+print(summary_dt)
