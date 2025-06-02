@@ -3,3 +3,5 @@ https://drive.google.com/drive/folders/1BBbmFtBDrHOs584nVG-epDGddjh-CwNT?usp=sha
 conda install -c conda-forge r-data.table r-magrittr r-lubridate r-ggplot2 r-cowplot r-repr r-kableextra r-irdisplay
 
 conda install -c conda-forge r-knitr r-rmdformats r-data.table r-magrittr r-lubridate r-ggplot2 r-cowplot r-repr r-kableextra r-irdisplay
+
+sum(!is.na(dt_All_IBNR$clm_number))
