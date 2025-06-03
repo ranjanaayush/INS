@@ -34,10 +34,17 @@ write.xlsx(claims_within_12m, "claims_within_12_months.xlsx")
 
 
 
+
+
+
+
+
+
+
 library(data.table)
 
 # Filter rows where clm_number is not NA
-dt_filtered <- dt_polclaim[!is.na(clm_number)]
+dt_filtered <- dt[!is.na(clm_number)]
 
 # Calculate delays in days
 dt_filtered[, `:=`(
@@ -72,4 +79,3 @@ summary_dt[, Delay := factor(Delay,
 )]
 
 print(summary_dt)
-
