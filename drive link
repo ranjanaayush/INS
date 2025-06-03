@@ -40,16 +40,41 @@ write.xlsx(claims_within_12m, "claims_within_12_months.xlsx")
 
 
 
-
 library(data.table)
 
-# Calculate delays in days using difftime if not already done
-dt_polclaim[, occur_delay := as.numeric(difftime(date_occur, date_pol_start, units = "days"))]
+# Filter rows where clm_number is not NA
+dt_filtered <- dt_polclaim[!is.na(clm_number)]
 
-# Find max delay value
-max_delay <- max(dt_polclaim$occur_delay, na.rm = TRUE)
+# Calculate delays in days using difftime()
+dt_filtered[, `:=`(
+  occur_delay = as.numeric(difftime(date_occur, date_pol_start, units = "days")),
+  report_delay = as.numeric(difftime(date_report, date_occur, units = "days")),
+  settlement_delay = as.numeric(difftime(date_pay, date_report, units = "days"))
+)]
 
-# Filter rows where occur_delay equals max_delay
-max_delay_rows <- dt_polclaim[occur_delay == max_delay, .(pol_number, clm_number, date_pol_start, date_occur, occur_delay)]
+# Calculate summary statistics for each delay
+summary_list <- lapply(
+  c("occur_delay", "report_delay", "settlement_delay"),
+  function(delay_col) {
+    data <- dt_filtered[[delay_col]]
+    data <- data[!is.na(data)]
+    list(
+      Delay = delay_col,
+      Max = max(data),
+      Min = min(data),
+      Mean = mean(data),
+      Median = median(data)
+    )
+  }
+)
 
-print(max_delay_rows)
+# Convert list to data.table
+summary_dt <- rbindlist(summary_list)
+
+# Rename delay rows to readable names
+summary_dt[, Delay := factor(Delay,
+  levels = c("occur_delay", "report_delay", "settlement_delay"),
+  labels = c("Occurrence Delay", "Report Delay", "Settlement Delay")
+)]
+
+print(summary_dt)
