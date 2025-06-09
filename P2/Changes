@@ -1,0 +1,22 @@
+dt_All_RBNS_delay[, date_pol_start_YYYYMM := format(date_pol_start, "%Y-%m")]
+
+
+dt_RBNS_summary_delay_polstart <- dt_All_RBNS_delay[rowList_RBNS_delay$test,
+  .(
+    avg_preds = mean(preds_full_delay),
+    avg_target = mean(target),
+    MAE = mean(abs(preds_full_delay - target)),
+    RMSE = sqrt(mean((preds_full_delay - target)^2)),
+    count = .N
+  ),
+  keyby = date_pol_start_YYYYMM
+]
+
+# Add Diff and % Diff for avg delay
+dt_RBNS_summary_delay_polstart[, ':='(
+  Diff = (avg_preds - avg_target),
+  Diff_pcnt = scales::percent((avg_preds - avg_target) / avg_target, accuracy = 0.1)
+)]
+
+# Show the head of the new table
+head(dt_RBNS_summary_delay_polstart, 15)
