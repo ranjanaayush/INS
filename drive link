@@ -40,15 +40,30 @@ write.xlsx(claims_within_12m, "claims_within_12_months.xlsx")
 
 
 
-# Define the start and end dates
-start_date <- as.Date("2008-01-01")
-end_date <- as.Date("2024-12-31")
+# Extract year from the 'date_occur_YYYYMM' column and add it as a new column 'year'
+dt_RBNS_summary[, year := substr(date_occur_YYYYMM, 1, 4)]
 
-# Create a sequence of dates for every 180 days
-lst_Date_slice <- seq(start_date, end_date, by = "180 days")
+# Aggregate data by year and sum preds and target
+dt_RBNS_yearly <- dt_RBNS_summary[, lapply(.SD, sum), by = year, .SDcols = c("preds", "target")]
 
-# Print the extracted dates from "P_t_YYYYMMDD" format
-for (i in 1:length(lst_Date_slice)) {
-  date_str <- format(lst_Date_slice[i], "%Y%m%d")
-  print(as.Date(date_str, format="%Y%m%d"))
-}
+# Add a total row for the sum of all years
+sumrow <- cbind(data.table(year = "Total"), dt_RBNS_yearly[, lapply(.SD, sum), .SDcols = c("preds", "target")])
+
+# Bind the sum row to the yearly data
+dt_RBNS_yearly <- rbind(dt_RBNS_yearly, sumrow, fill = TRUE)
+
+# Calculate the difference and percentage difference
+dt_RBNS_yearly[, ':='(
+  Diff = (preds - target),
+  Diff_pcnt = scales::percent((preds - target) / target, accuracy = 0.1)
+)]
+
+# Print the table as HTML with year-based aggregation
+kable(dt_RBNS_yearly, "html",
+      digits = c(2, 0, 0, 0, 1),
+      format.args = list(big.mark = ",", scientific = FALSE)
+) %>% 
+  kable_styling("striped") %>% 
+  scroll_box(width = "100%") %>%
+  as.character() %>%
+  display_html()
