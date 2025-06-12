@@ -40,6 +40,40 @@ write.xlsx(claims_within_12m, "claims_within_12_months.xlsx")
 
 
 
-#default feature importance by gain
-featImp_IBNR_F <- xgb.importance(xgb_IBNR_F_Fit, feature_names = colnames(xgb.IBNR_F_DMat.train))
-xgb.plot.importance(featImp_IBNR_F, main="Feature Importance - IBNR Frequency")
+# Convert columns to Date format if not already
+dt_polclaim$date_occur <- as.Date(dt_polclaim$date_occur)
+dt_polclaim$date_report <- as.Date(dt_polclaim$date_report)
+dt_polclaim$date_pay <- as.Date(dt_polclaim$date_pay)
+dt_polclaim$date_pol_start <- as.Date(dt_polclaim$date_pol_start)
+
+# Filter out rows where any of the dates are '2199-12-31'
+dt_polclaim <- dt_polclaim[!(date_occur == "2199-12-31" | date_report == "2199-12-31" | date_pay == "2199-12-31")]
+
+# Calculate the delays
+dt_polclaim[, occ_delay := as.numeric(difftime(date_occur, date_pol_start, units = "days"))]
+dt_polclaim[, report_delay := as.numeric(difftime(date_report, date_occur, units = "days"))]
+dt_polclaim[, pay_delay := as.numeric(difftime(date_pay, date_report, units = "days"))]
+
+# Calculate the statistics (max, min, mean, median) for each delay
+delay_stats <- matrix(nrow = 4, ncol = 3, 
+                     dimnames = list(c("Max", "Min", "Mean", "Median"), 
+                                     c("Occurrence Delay", "Report Delay", "Payment Delay")))
+
+# Filling the matrix with values
+delay_stats["Max", "Occurrence Delay"] <- max(dt_polclaim$occ_delay, na.rm = TRUE)
+delay_stats["Min", "Occurrence Delay"] <- min(dt_polclaim$occ_delay, na.rm = TRUE)
+delay_stats["Mean", "Occurrence Delay"] <- mean(dt_polclaim$occ_delay, na.rm = TRUE)
+delay_stats["Median", "Occurrence Delay"] <- median(dt_polclaim$occ_delay, na.rm = TRUE)
+
+delay_stats["Max", "Report Delay"] <- max(dt_polclaim$report_delay, na.rm = TRUE)
+delay_stats["Min", "Report Delay"] <- min(dt_polclaim$report_delay, na.rm = TRUE)
+delay_stats["Mean", "Report Delay"] <- mean(dt_polclaim$report_delay, na.rm = TRUE)
+delay_stats["Median", "Report Delay"] <- median(dt_polclaim$report_delay, na.rm = TRUE)
+
+delay_stats["Max", "Payment Delay"] <- max(dt_polclaim$pay_delay, na.rm = TRUE)
+delay_stats["Min", "Payment Delay"] <- min(dt_polclaim$pay_delay, na.rm = TRUE)
+delay_stats["Mean", "Payment Delay"] <- mean(dt_polclaim$pay_delay, na.rm = TRUE)
+delay_stats["Median", "Payment Delay"] <- median(dt_polclaim$pay_delay, na.rm = TRUE)
+
+# Print the matrix
+print(delay_stats)
