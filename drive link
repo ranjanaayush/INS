@@ -17,7 +17,7 @@ claims_within_3m <- dt_policy_claim[
   date_report >= valuation_date & date_report < (valuation_date %m+% months(3))
 ]
 
-# Claims reported within 12 months after valuation date
+# Claims reported within 12 months after valuation datea
 claims_within_12m <- dt_policy_claim[
   date_report >= valuation_date & date_report < (valuation_date %m+% months(12))
 ]
@@ -40,41 +40,15 @@ write.xlsx(claims_within_12m, "claims_within_12_months.xlsx")
 
 
 
-library(data.table)
+# Define the start and end dates
+start_date <- as.Date("2008-01-01")
+end_date <- as.Date("2024-12-31")
 
-# Filter rows where clm_number is not NA
-dt_filtered <- dt_polclaim[!is.na(clm_number)]
+# Create a sequence of dates for every 180 days
+lst_Date_slice <- seq(start_date, end_date, by = "180 days")
 
-# Calculate delays in days using difftime()
-dt_filtered[, `:=`(
-  occur_delay = as.numeric(difftime(date_occur, date_pol_start, units = "days")),
-  report_delay = as.numeric(difftime(date_report, date_occur, units = "days")),
-  settlement_delay = as.numeric(difftime(date_pay, date_report, units = "days"))
-)]
-
-# Calculate summary statistics for each delay
-summary_list <- lapply(
-  c("occur_delay", "report_delay", "settlement_delay"),
-  function(delay_col) {
-    data <- dt_filtered[[delay_col]]
-    data <- data[!is.na(data)]
-    list(
-      Delay = delay_col,
-      Max = max(data),
-      Min = min(data),
-      Mean = mean(data),
-      Median = median(data)
-    )
-  }
-)
-
-# Convert list to data.table
-summary_dt <- rbindlist(summary_list)
-
-# Rename delay rows to readable names
-summary_dt[, Delay := factor(Delay,
-  levels = c("occur_delay", "report_delay", "settlement_delay"),
-  labels = c("Occurrence Delay", "Report Delay", "Settlement Delay")
-)]
-
-print(summary_dt)
+# Print the extracted dates from "P_t_YYYYMMDD" format
+for (i in 1:length(lst_Date_slice)) {
+  date_str <- format(lst_Date_slice[i], "%Y%m%d")
+  print(as.Date(date_str, format="%Y%m%d"))
+}
