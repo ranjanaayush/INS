@@ -77,3 +77,14 @@ delay_stats["Median", "Payment Delay"] <- median(dt_polclaim$pay_delay, na.rm = 
 
 # Print the matrix
 print(delay_stats)
+
+
+
+Performance Comparison of Feature Extraction Techniques for Power Quality Disturbances
+IEEE ICMICA 2024 – Published Research Paper
+
+Conducted a comparative evaluation of feature extraction methods, including Stockwell Transform and Fast Fourier Transform, for classifying power quality disturbances.
+
+Assessed model performance using machine learning algorithms such as k-Nearest Neighbors (kNN), Decision Tree, and Bagged Trees under realistic signal noise conditions.
+
+Provided insights into the suitability of each method for improving the accuracy and reliability of power disturbance detection in electrical systems.
